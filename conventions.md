@@ -149,7 +149,7 @@ stale | fixed ──> archived   整理路径搬到 details/archive/,从 log 删
 
 要"修正一条经验" → 写新 entry,`supersedes: <old-id>`,旧条目状态切 `stale`/`fixed`。
 
-**归档不是删除事实**。在整理路径里、`status` 为 `stale`/`fixed` 且 version 已超出当前使用范围时,**整条从 log.md 搬入 `details/archive/<id>.md`**(完整保留 entry 全文,包括元数据与正文)。从 log.md 中移除该条 = 从"工作集"移除,不等于丢弃。归档后:
+**归档不是删除事实**。在整理路径里,`status` 为 `stale`/`fixed` 且 `version` 字段**不等于当前项目版本**(纯字符串比较,V1 不做范围/顺序推理 —— 详见 scripts-contract §Version + §archive candidates)时,**整条从 log.md 搬入 `details/archive/<id>.md`**(完整保留 entry 全文,包括元数据与正文)。从 log.md 中移除该条 = 从"工作集"移除,不等于丢弃。归档后:
 - 历史事实由 `details/archive/` 持有
 - 工作集 SoT(`log.md`)只保留 active + 近期未归档历史
 - 整个 `.experience/` 目录依然是完整 SoT(见 §8)

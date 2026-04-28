@@ -1,6 +1,10 @@
 # Validation — 压力场景自检
 
-修改了 SKILL.md / conventions.md / templates/* 之后,跑一遍这 8 个场景,确保设计不漏。每个场景给"输入" + "正确行为" + "失败信号"。
+修改了 SKILL.md / conventions.md / review.md / scripts-contract.md / scripts/* / templates/* 之后,跑这 20 个场景。每个场景给"输入" + "正确行为" + "失败信号"。
+
+- 场景 1-15:流程层(决策路径 / SoT / 状态流转 / review 子流程 / overrides / 认错)
+- 场景 16-18:脚本行为(空 / 合法 / 违规 fixture)
+- 场景 19-20:本轮新增(A 路径 Restate First / path E Done Contract)
 
 ## 场景 1 — log.md 并发写入冲突
 

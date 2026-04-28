@@ -130,7 +130,9 @@ description: Use when the user asks to set up, append to, curate, or read a per-
    - 文件存在但行号漂了 → 更新 `anchor` 行号 + `last_verified`
    - 文件 / 内容找不到 → `status` 改 `stale`,在条目末尾追加一行 `- note: anchor lost on YYYY-MM-DD`(末尾追加是 conventions §9 允许的写法)
 
-2. **状态批处理**:对每条 `status: stale` 或 `fixed` 的 entry,如果其 version 已超出当前项目使用版本范围 → 整条从 `log.md` **搬入** `details/archive/<id>.md`(完整保留 entry 全文)。这是从工作集移除,**不是丢弃事实** —— 历史由 archive 持有。详见 conventions §7、§8。
+2. **状态批处理**:对每条 `status: stale` 或 `fixed` 的 entry,如果其 `version` 字段**与当前项目版本不相等**(纯字符串比较,V1 不做范围/顺序推理)→ 整条从 `log.md` **搬入** `details/archive/<id>.md`(完整保留 entry 全文)。这是从工作集移除,**不是丢弃事实** —— 历史由 archive 持有。
+
+   语义口径与 `scripts-contract.md` §archive candidates 一致:**"差异于当前版本",不是"早于"**。可能命中并行分支 / 未来版本字符串,实际是否归档由人工判断。详见 conventions §7、§8。
 
 3. **AGENT.md 收敛**:
    - "active 条目精选"按 type 分组重排,把高频/高价值的前置
@@ -253,7 +255,7 @@ description: Use when the user asks to set up, append to, curate, or read a per-
 | 脚本 | 何时用 | 命令示例 |
 |------|-------|---------|
 | `validate.py` | 写完一批 entry 后 / C 整理路径前 | `python scripts/validate.py [--strict] [--root <path>]` |
-| `query.py`    | D 阅读 / B 追加前查重 | `python scripts/query.py --status active --type bug --format table\|ids\|json` |
+| `query.py`    | D 阅读 / B 追加前查重 | `python scripts/query.py --status active --type bug --format table\|ids` |
 | `stats.py`    | C 整理路径决策时 / B 路径尾部检查替代手算 | `python scripts/stats.py [--stale-days N] [--agent-cap N]` |
 
 **调用方式**:在项目根目录(含 `.experience/` 的目录)执行,或显式 `--root /path/to/project`。

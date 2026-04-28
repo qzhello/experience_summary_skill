@@ -27,31 +27,53 @@ It does **not** apply to AI agents that *use* the skill at a user's project site
 
 **没读 contract 就改 scripts 是已知的反复犯过的错。** 不要再犯。
 
-## 改动后必做
+## 改动后必做 — 改动→场景回归矩阵
 
-| 改了 | 必跑 |
-|------|------|
-| `scripts/lib/parse.py` 或任何 schema 字段 | scripts 三脚本对 16/17/18 fixture 全跑通 |
-| `validate.py` 错误码 / 警告码 | 在 `validation.md` 加对应压力场景 |
-| `SKILL.md` 任何路径 | 检查 `validation.md` 现有场景是否仍生效 |
-| `conventions.md` 任何字段规约 | `templates/log.template.md` 模板对齐检查 |
-| `review.md` 任何流程 | `SKILL.md` E 节指针仍然准确 |
+`validation.md` 全 20 场景是金标准,日常按下表选跑相关子集即可。**全量回归留给"重大版本变更"或"季度维护"**。
+
+| 改了什么 | 必跑场景(`validation.md` 编号) | 还要做的 |
+|---------|------------------------------|---------|
+| `SKILL.md` A 路径 | 9, 19 | — |
+| `SKILL.md` B 路径 | 6 | — |
+| `SKILL.md` C 路径 / archive 语义 | 4 | — |
+| `SKILL.md` D / 全局规则 G1-G4 | 5, 6, 9, 19 | — |
+| `SKILL.md` E 入口指针 | 9, 10, 11, 12, 14, 20 | 检查与 `review.md` 一致 |
+| `conventions.md` §1 entry schema | 17, 18 | `templates/log.template.md` 三模板对齐 |
+| `conventions.md` §3 / §3.1 / §3.2 字段 | 17, 18 | §1 示例同步;`scripts/validate.py` 必填检查同步 |
+| `conventions.md` §5 status 流转 | 5, 17, 18 | — |
+| `conventions.md` §6 type 收敛 | 6, 17, 18 | `categories.md` 模板一致性 |
+| `conventions.md` §7 不可变规则 / archive | 1, 4 | `SKILL.md` C 路径同步 |
+| `conventions.md` §8 SoT | 2 | — |
+| `conventions.md` §11 overrides | 14 | — |
+| `conventions.md` §12 反向触发 | 13 | — |
+| `review.md` path E 流程 | 9, 10, 11, 12 | `SKILL.md` E 入口同步 |
+| `review.md` Done Contract | 20 | — |
+| `review.md` rubric / severity | 11 | — |
+| `categories.md` | 8 | 4 份 `templates/AGENT.<cat>.md` 对齐 |
+| `scripts/lib/parse.py` | 16, 17, 18 | 跑微测试(空 bullet / 正文 `---` / 嵌套 archive) |
+| `scripts/validate.py` 任意改动 | 16, 17, 18, 21 | 改 error/warning 码 → `scripts-contract.md` 同步 |
+| `scripts/query.py` | 17(覆盖部分)| 改 format / 过滤语义 → `scripts-contract.md` 同步 |
+| `scripts/stats.py` | 17(覆盖部分)| 改 archive 候选语义 → `scripts-contract.md` §archive 同步 |
+| `scripts-contract.md` 任何节 | 17, 18, 21 取决于改了哪节 | 跑 grep 找旧措辞,SKILL.md / conventions.md 同步 |
+| `templates/AGENT.<cat>.md` | 7 | 与对应 categories 段落对齐 |
+| `templates/log.template.md` | 16, 17 | 与 `conventions.md` §1 三模板对齐 |
+| `templates/review-state.template.md` | — | 与 `review.md` 跟踪规则对齐 |
+| 仅改 `README.md` / `AGENTS.md` / `LICENSE` | — | 无回归(纯文档) |
+
+**全量回归触发**:V1.x → V2 主版本号变更 / 季度维护 / 任何"我自己也说不清这次改了多少"的大刀阔斧。
 
 **回归不通过不许 commit**。
 
-## 输出风格(对用户的回复)
+## 输出风格
 
-适用于本仓库内所有 AI 回复(开发讨论 / review / 修复)。在用户项目里执行 skill 时,SKILL.md G2 也写了相同 9 条 —— 这里是 source,SKILL.md G2 是镜像,**改一处要同步另一处**。
+**单一 source**:[`SKILL.md` § G2 输出风格](SKILL.md)。本仓库所有 AI 回复(开发讨论 / review / 修复)与 skill 在用户侧执行时**遵守同一份** 9 条规则,不在此处重复全文以避免漂移。
 
-1. **结论先行**:第一行就是结论,不是过程独白
-2. **表格 / 列表 > 段落**:枚举性内容必须表格化
-3. **重要度排序**:不按时间序、不按文件序,按"用户最该先看"排
-4. **一屏可读**:默认 ≤ 1 屏,展开放 details/ 或追加链接
-5. **图表触发**:≥ 3 个组件关系 / 状态流转 / 时序 → mermaid;数值对比 → 表格
-6. **不写过程独白**:"我先看一下…然后…"全删
-7. **置信度显式**:不确定的结论标 `(low confidence)` / `<TBD>`
-8. **错则认错**:用户指出错误,先承认再修正,不狡辩、不找补
-9. **怀疑自己**:判断若依赖未验证假设,显式写"假设 X 成立时,…;否则结论失效"
+为方便跳读,9 条标题速览(细则去 SKILL.md 看):
+结论先行 / 表格优先 / 重要度排序 / 一屏可读 / 图表触发 / 不写过程独白 / 置信度显式 / 错则认错 / 怀疑自己
+
+**改风格规则只能改 SKILL.md G2**;改完不需要同步本文件。
+
+> 设计取舍:source 放 SKILL.md 是因为 SKILL.md 在用户项目侧加载,无 AGENTS.md 可依赖;反之本仓库做开发时两份都能读到。
 
 ## 安全 / Hygiene
 
@@ -102,6 +124,8 @@ git status --short | grep -v '^??'       # 确认 untracked 是有意为之
 ## 维护节奏(防止"会提醒不会沉淀")
 
 G3 进化触发只产生"建议",不产生"晋升"。需要一个最简的人工节奏把高频 `.overrides.md` 内容上升到通用规则,把低价值的清掉。否则 skill 会越用越散。
+
+> **适用边界**:以下节奏面向**单维护者 / 小团队**(2-3 人)。团队场景请把"月度 / 季度"映射到自己的 sprint / standup 节奏 —— 频率不重要,**有节奏比无节奏重要**。
 
 ### 月度(每月一次,~10 分钟)
 

@@ -1,6 +1,6 @@
 # Validation — 压力场景自检
 
-修改了 SKILL.md / conventions.md / review.md / scripts-contract.md / scripts/* / templates/* 之后,跑这 20 个场景。每个场景给"输入" + "正确行为" + "失败信号"。
+修改了 SKILL.md / conventions.md / review.md / scripts-contract.md / scripts/* / templates/* 之后,按 `AGENTS.md` 改动→场景矩阵选跑相关子集;全量回归(全 21 场景)留给重大版本变更或季度维护。每个场景给"输入" + "正确行为" + "失败信号"。
 
 - 场景 1-15:流程层(决策路径 / SoT / 状态流转 / review 子流程 / overrides / 认错)
 - 场景 16-18:脚本行为(空 / 合法 / 违规 fixture)

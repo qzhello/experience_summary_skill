@@ -38,7 +38,9 @@ description: Use when the user asks to set up, append to, curate, or read a per-
 | 查阅 | [D. 阅读](#d-阅读) |
 | review 代码 | [E. Review](#e-review)(详见 [`review.md`](review.md)) |
 
-**任何路径开始执行前**:若 `.experience/.overrides.md` 存在,**先读它**,按它覆盖通用规则(只在 conventions §11 允许的覆盖范围内)。
+**前置条件,按路径区分**:
+- **A 路径**:`.experience/` 此时尚未存在,**不读** `.overrides.md`(也无从读)。A 完成后,`.overrides.md` 仍是按需才建,**不**自动创建。
+- **B / C / D / E 路径**:执行前若 `.experience/.overrides.md` 存在,**先读它**,按它覆盖通用规则(只在 conventions §11 允许的覆盖范围内)。不存在则按通用规则。
 
 ---
 

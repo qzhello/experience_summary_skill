@@ -4,7 +4,8 @@
 
 - 场景 1-15:流程层(决策路径 / SoT / 状态流转 / review 子流程 / overrides / 认错)
 - 场景 16-18:脚本行为(空 / 合法 / 违规 fixture)
-- 场景 19-20:本轮新增(A 路径 Restate First / path E Done Contract)
+- 场景 19-20:Restate First / Done Contract
+- 场景 21:secret lint(W006)
 
 ## 场景 1 — log.md 并发写入冲突
 
@@ -290,9 +291,28 @@
 
 ---
 
+---
+
+## 场景 21 — entry 正文中粘进 token / 密钥(W006)
+
+**输入**:某条 pitfall entry 的 `trigger:` 字段被人粘进了真实的 GitHub PAT(`ghp_` 开头长串)或 `Bearer xxxxx...` 这类敏感字符串。
+
+**正确行为**:`validate.py` 默认输出 `WARNING W006`,显示**脱敏前缀**(前 4 字 + `***`)+ 模式名(`GitHub PAT (ghp_)` / `Bearer token` 等);
+- 不阻断(只是 warning)
+- `--strict` 时升级为 error
+- `--no-secret-scan` 时不扫
+- `--check-agent` 时同样扫 AGENT.md
+
+**失败信号**:
+- 真实 token 完整出现在输出里(脱敏失败)
+- 默认行为下漏报常见模式
+- `--no-secret-scan` 下仍报警
+
+---
+
 ## 自检通过标准
 
-20 个场景全部触发"正确行为",无任何"失败信号"出现。任一失败 → 回到对应 SKILL.md / conventions.md / review.md / scripts 段落修文档或修脚本,**不要修压力场景去迁就实现**。
+21 个场景全部触发"正确行为",无任何"失败信号"出现。任一失败 → 回到对应 SKILL.md / conventions.md / review.md / scripts 段落修文档或修脚本,**不要修压力场景去迁就实现**。
 
 **脚本场景(16-18)** 可半自动化跑:在 `/tmp/` 下建 fixture 目录,跑脚本,对比 stdout / exit code。
 **流程场景(1-15, 19, 20)** 由 AI 在执行路径时自检:回看自己刚才的回复,逐条对照"正确行为"。

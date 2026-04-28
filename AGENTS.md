@@ -99,6 +99,36 @@ git status --short | grep -v '^??'       # 确认 untracked 是有意为之
 - ❌ 增加 G3 进化触发以外的 AI 自动行为 —— 用户拍板 always wins
 - ❌ 复制 `.experience/` 内容回 skill 仓库("看,真实例子!") —— 那是用户项目的隐私
 
+## 维护节奏(防止"会提醒不会沉淀")
+
+G3 进化触发只产生"建议",不产生"晋升"。需要一个最简的人工节奏把高频 `.overrides.md` 内容上升到通用规则,把低价值的清掉。否则 skill 会越用越散。
+
+### 月度(每月一次,~10 分钟)
+
+1. 跑 `python scripts/stats.py` 在每个使用本 skill 的项目,记下 entry 数 / stale candidates / archive candidates
+2. 抽查 3-5 个项目的 `.overrides.md`,看是否有同一种 override 在 ≥3 个项目里重复(例如多项目都给 `risk` tag 加同义词)
+3. 高频重复 override → 候选上升到 `conventions.md`(正式改 + 同步增 validation 场景)
+4. 不结合具体项目的 override 不动
+
+### 季度(每季度一次,~30 分钟)
+
+1. 清过老 entry:跑 `python scripts/stats.py --stale-days 180`,逐条裁决:`fixed` / 新 entry supersede / 暂留
+2. 跑 `python scripts/stats.py --current-version <v>`,审视 archive candidates 是否真该归档(per scripts-contract:候选 ≠ 应归档)
+3. 检查 `.overrides.md` 总条数:超过 10 条 → 强信号,该收敛上升到通用规则,本项目不该一直背
+4. AGENT.md 行数审查:接近 150 行的项目走整理
+
+### 任何大规则变更必带
+
+- `conventions.md` / `scripts-contract.md` 任何字段/规则变更 → 必带 `validation.md` 新场景
+- 改了字段必填性 → 必带 `conventions.md` §1 示例同步
+- 改了某条字段的语义 → grep 整库找到旧措辞,一并更新(已经因为这条踩过 2 次坑)
+
+### 不做的
+
+- 不做自动化"上升通用规则" —— 这是人类决策点
+- 不做"按时间清 entry" —— 经验老不等于错,要看 status 与 last_verified
+- 不写"维护工具" —— `stats.py` + grep 已经够用,加 dashboard = 范围膨胀
+
 ## 重大决策的痕迹
 
 不要让讨论纪要全留在对话里,**把已锁死的决策写入对应文档**。已经锁的:

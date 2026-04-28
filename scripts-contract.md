@@ -157,8 +157,12 @@ V1 **不支持**:
 
 - `version=unknown`
 - `last_verified` 过旧
-- `AGENT.md` 行数接近上限
+- `AGENT.md` 行数接近上限(仅 `--check-agent`)
 - `AGENT.md` 链了非 active 条目(仅 `--check-agent`)
+- entry 正文中疑似密钥/敏感字符串(W006):常见 token 前缀(`ghp_` / `sk-` / `AKIA` / `xox?-` / JWT `eyJ.eyJ.`)、Bearer token、`password=`/`api_key=` 风格的赋值。
+  - 默认开启,`--no-secret-scan` 关闭
+  - 仅匹配模式,不做语义判断;命中后输出脱敏前缀(前 4 字 + `***`),由人工核查
+  - `--check-agent` 时也扫 `AGENT.md`
 
 ### 模式
 

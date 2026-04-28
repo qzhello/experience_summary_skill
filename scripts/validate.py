@@ -31,6 +31,33 @@ from lib.parse import (  # noqa: E402
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 AGENT_LINK_RE = re.compile(r"log\.md#([a-z0-9-]+)")
 
+# W006: secret-like patterns in entry body. Conservative set — high signal, low false positive.
+# Each entry: (compiled_regex, human_label).
+SECRET_PATTERNS = [
+    (re.compile(r"\bghp_[A-Za-z0-9_]{30,}"), "GitHub PAT (ghp_)"),
+    (re.compile(r"\bgh[osu]_[A-Za-z0-9_]{30,}"), "GitHub OAuth/server token"),
+    (re.compile(r"\bsk-(?:ant-)?[A-Za-z0-9_-]{20,}"), "API key (sk-…)"),
+    (re.compile(r"\bAKIA[0-9A-Z]{16}\b"), "AWS access key"),
+    (re.compile(r"\bxox[bposa]-[A-Za-z0-9-]{10,}"), "Slack token"),
+    (re.compile(r"\beyJ[A-Za-z0-9_-]+\.eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+"), "JWT"),
+    (re.compile(r"\bBearer\s+[A-Za-z0-9._\-]{30,}"), "Bearer token"),
+    (re.compile(
+        r"(?i)\b(?:password|passwd|secret|api[_-]?key|token)\s*[:=]\s*"
+        r"['\"]?[A-Za-z0-9_!@#$%^&*+=./\-]{8,}"
+    ), "credential assignment"),
+]
+
+
+def _scan_secrets(text: str) -> list:
+    """Return [(label, redacted_snippet), ...] for any secret-like patterns hit."""
+    hits = []
+    for pattern, label in SECRET_PATTERNS:
+        for m in pattern.finditer(text):
+            snippet = m.group(0)
+            redacted = (snippet[:4] + "***") if len(snippet) > 6 else "***"
+            hits.append((label, redacted))
+    return hits
+
 
 @dataclass
 class Issue:
@@ -91,6 +118,7 @@ def validate(
     log_lines: int,
     check_agent: bool,
     agent_md_path,
+    secret_scan: bool,
 ) -> list:
     issues: list = []
     entries = result.entries
@@ -187,6 +215,13 @@ def validate(
             issues.append(Issue("error", "E014", e.id,
                                 f"supersedes points to nonexistent id: {sup!r}"))
 
+        # W006 secret-like patterns in entry body
+        if secret_scan and e.body:
+            for label, redacted in _scan_secrets(e.body):
+                issues.append(Issue("warning", "W006", e.id,
+                                    f"possible {label} in body: {redacted} — "
+                                    f"check before commit / consider redacting"))
+
     # E017 supersedes cycle
     for start_id, chain in _detect_supersedes_cycles(entries):
         issues.append(Issue("error", "E017", start_id, f"supersedes cycle: {chain}"))
@@ -201,6 +236,12 @@ def validate(
     if check_agent and agent_md_path is not None and agent_md_path.is_file():
         agent_text = agent_md_path.read_text(encoding="utf-8")
         agent_lines = len(agent_text.splitlines())
+
+        # W006 also scans AGENT.md when --check-agent is on
+        if secret_scan:
+            for label, redacted in _scan_secrets(agent_text):
+                issues.append(Issue("warning", "W006", "-",
+                                    f"possible {label} in AGENT.md: {redacted}"))
         if agent_lines > agent_cap_warn:
             issues.append(Issue("warning", "W003", "-",
                                 f"AGENT.md is {agent_lines} lines (warn at {agent_cap_warn})"))
@@ -235,7 +276,9 @@ def main() -> int:
     ap.add_argument("--stale-days", type=int, default=90)
     ap.add_argument("--agent-cap", type=int, default=140)
     ap.add_argument("--check-agent", action="store_true",
-                    help="Also validate AGENT.md (size + non-active links)")
+                    help="Also validate AGENT.md (size + non-active links + secret scan)")
+    ap.add_argument("--no-secret-scan", action="store_true",
+                    help="Disable W006 secret-pattern scan in entry bodies")
     ap.add_argument("--format", choices=["table", "json"], default="table")
     args = ap.parse_args()
 
@@ -257,6 +300,7 @@ def main() -> int:
         log_lines=log_lines,
         check_agent=args.check_agent,
         agent_md_path=agent_md,
+        secret_scan=not args.no_secret_scan,
     )
     errors = [i for i in issues if i.level == "error"]
     warnings = [i for i in issues if i.level == "warning"]

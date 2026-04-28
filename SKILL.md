@@ -136,16 +136,13 @@ description: Use when the user asks to set up, append to, curate, or read a per-
 
 ## E. Review
 
-阅读源码时顺手做轻量代码审视。完整规则见 [`review.md`](review.md)。**最小流程**:
+阅读源码时顺手做轻量代码审视。**完整规则、流程、口径全部在** [`review.md`](review.md),本文件不重复叙述以避免双源漂移。
 
-1. **只 `scope` 硬反问**(模糊一律问,绝不猜);`mode` / `ignore` **不反问**,采默认值 `mode=quick` / `ignore=low`,在执行前一句话告知用户("已采用 mode=quick、ignore=low,要改请说")
-2. 读 `.experience/review-state.md` 跳过 commit 未变文件
-3. Quick (≤5 文件/1500 行,1 遍) 或 Deep (≤2 文件/800 行,≥2 遍 + 跟引用)
-4. 按 4 维 rubric(正确性 / 认知陷阱 / 架构 / 不变量)产出 finding 表
-5. **候选清单输出 → 用户拍板** → 选中的合并多锚点后写入 log.md
-6. 追加 `tags: review-session` 标记 entry,更新 `review-state.md`
-
-**不擅自落库,不擅自定范围,不输出 low(除非用户 `include-low`)**。完整规则与统一口径见 [`review.md`](review.md)。
+入门点(够你决定要不要进 review.md):
+- 只 `scope` 硬反问;`mode` 默认 quick、`ignore` 默认 low
+- 候选 finding 清单 → 用户拍板 → 才落 log.md
+- 同类问题合并多锚点,不写多条
+- 追加 `tags: review-session` 标记 entry,更新 `review-state.md`
 
 ---
 
@@ -235,3 +232,35 @@ description: Use when the user asks to set up, append to, curate, or read a per-
 - [`templates/review-state.template.md`](templates/review-state.template.md) — review 跟踪本地库骨架
 - [`review.md`](review.md) — review 子功能完整规约(rubric / 模式 / severity / 候选流)
 - [`validation.md`](validation.md) — 压力场景自检
+- [`scripts/`](scripts/) — 可选加速器(详见下节)
+
+## 脚本(可选加速器,不是判官)
+
+`scripts/` 下提供 3 个纯只读 Python 脚本(stdlib only,Python 3.9+)。**非必需**,删了 skill 仍 work。
+
+| 脚本 | 何时用 | 命令示例 |
+|------|-------|---------|
+| `validate.py` | 写完一批 entry 后 / C 整理路径前 | `python scripts/validate.py [--strict] [--root <path>]` |
+| `query.py`    | D 阅读 / B 追加前查重 | `python scripts/query.py --status active --type bug --format table\|ids\|json` |
+| `stats.py`    | C 整理路径决策时 / B 路径尾部检查替代手算 | `python scripts/stats.py [--stale-days N] [--agent-cap N]` |
+
+**调用方式**:在项目根目录(含 `.experience/` 的目录)执行,或显式 `--root /path/to/project`。
+
+**根定位行为**:不传 `--root` 时,脚本从 cwd 向上**找到第一个** `.experience/log.md` 就用它。
+- monorepo 嵌套场景(子项目自己有 `.experience/`,父仓库也有)从子项目执行 → 命中子项目的(预期)
+- 但若子项目**没建** `.experience/`,会**意外命中**父仓库的 → 不报错也不警告。
+  防踩坑:在 monorepo 子项目里跑脚本,**显式传** `--root .` 或先 `cd` 到子项目根。
+
+**核心边界(不要破)**:
+
+- 脚本**只读**。不写 `log.md` / `AGENT.md` / `details/` / `review-state.md`。
+- 脚本输出**不缓存**。不存 `.cache/`,每次现解析。
+- 脚本只验证**格式与规则**,**不验证经验内容真伪**。`validate.py` 通过 ≠ 经验是对的。
+- 所有写入仍走 AI + 用户拍板路径,脚本不替代人工判断和 AI 阅读。
+- 锚点真伪校验(文件存在、行号准、符号在)仍是 C 整理路径里 AI 用 Read 工具手动做,脚本不做。
+
+**反模式**:
+- ❌ 把 `validate.py` 通过当成"经验质量保证"
+- ❌ 让脚本去改 entry / 改 status / 自动归档
+- ❌ 引入第三方 Python 依赖 / 引入 SQLite / 引入持久化缓存
+- ❌ 跳过脚本设计的"现解析"原则,改成读缓存

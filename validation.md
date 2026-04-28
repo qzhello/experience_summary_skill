@@ -203,6 +203,54 @@
 
 ---
 
+---
+
+## 场景 16 — 脚本对空 log.md 的行为
+
+**输入**:刚走完 A 路径,`.experience/log.md` 只有顶部模板注释,无任何 entry。跑三个脚本。
+
+**正确行为**:
+- `validate.py` → exit 0,输出 "(no issues)" + "0 entries · 0 errors · 0 warnings"
+- `query.py` → 输出 "(no entries)",exit 0
+- `stats.py` → 输出全 0 计数,无 stale / archive 候选,exit 0
+
+**失败信号**:任一脚本抛异常 / 给出虚假 finding / 把模板注释当成 entry 解析。
+
+---
+
+## 场景 17 — 合法 fixture 全脚本通过
+
+**输入**:`.experience/log.md` 含 conventions §1 的 3 个标准范例(bug-with-severity / decision-with-alternatives-rationale / note-without-severity)。
+
+**正确行为**:
+- `validate.py` → exit 0,0 errors,0 warnings(假设 last_verified 为今天)
+- `query.py --status active --type bug` → 输出 1 条,severity=high
+- `query.py --format ids` → 输出 3 行,每行一个 id
+- `stats.py` → 显示 by-type bug 1 / decision 1 / note 1,by-severity high 1
+
+**失败信号**:误报任何 error;漏报任何 entry;summary 抽错(bug 应抽 trigger,decision 应抽 rationale,note 应抽首 bullet)。
+
+---
+
+## 场景 18 — 故意违规 fixture
+
+**输入**:`.experience/log.md` 含一条 `type: bug` 但缺 `severity` / 缺 `version` / `anchor: src/foo.c`(裸路径) / 正文缺 trigger/cause/fix / `last_verified: not-a-date` 的 entry。
+
+**正确行为** `validate.py` 必须命中:
+- E004 (version 空)
+- E006 (bug 缺 severity)
+- E010 (anchor 裸路径)
+- E011 ×3 (缺 trigger / cause / fix 三 bullet)
+- E016 (last_verified 非法日期)
+
+精确到 7 条 error。exit 1。
+
+**失败信号**:漏报任一 error / 多报无关 error / exit 0。
+
+---
+
 ## 自检通过标准
 
-15 个场景全部触发"正确行为",无任何"失败信号"出现。任一失败 → 回到对应 SKILL.md / conventions.md / review.md 段落修文档,不要修压力场景去迁就实现。
+18 个场景全部触发"正确行为",无任何"失败信号"出现。任一失败 → 回到对应 SKILL.md / conventions.md / review.md / scripts 段落修文档或修脚本,**不要修压力场景去迁就实现**。
+
+**脚本场景(16-18)** 可半自动化跑:在 `/tmp/` 下建 fixture 目录,跑脚本,对比 stdout / exit code。

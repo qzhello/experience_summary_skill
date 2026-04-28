@@ -146,6 +146,29 @@ tags: review-session, quick
 
 这条规则也写进 SKILL.md 的"全局规则"区。
 
+## Done Contract(每次 review 收尾必须输出)
+
+候选拍板完成、entry 写入 log.md 之后,**在最终回复末尾固定输出六段**。这是 path E 的硬性收尾,缺则视为未完成:
+
+```
+## Review Done Contract
+
+1. Committed       : <写入 log.md 的 entry id 列表;无则写 "(none)">
+2. AGENT.md        : <updated / not touched>
+3. review-state.md : <updated for: <file 列表 + commit hash>>
+4. Coverage        : <本次 scope 内已扫文件 / 跳过(未变)文件 / 升级到 Deep 的区域>
+5. Uncovered risks : <本次 review 没覆盖但建议后续做的方向;无则写 "(none)">
+6. Next            : <integrate / Deep follow-up <area> / 整理 / 不需要后续>
+```
+
+作用:
+- 让用户一眼看清"这次 review 实际产出了什么、改动了哪些文件、还有什么没做"
+- 防止 review 收尾松散("好像扫完了但说不清做了什么")
+- 给整理路径(C)提供后续触发依据
+- 与 review-session 标记 entry 一起,构成可追溯的 review 历史
+
+**不允许**:省略任何一段;用"看代码就知道"代替具体 id 列表;把"无"留空(必须显式写 "(none)")。
+
 ## 反模式
 
 - ❌ AI 自己决定 review 范围("我看一眼整个项目")

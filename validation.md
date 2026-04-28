@@ -249,8 +249,46 @@
 
 ---
 
+---
+
+## 场景 19 — A 路径必须 Restate First
+
+**输入**:用户说"为这个项目建经验目录"。
+
+**正确行为**:
+- AI **先输出 Restate 模板**,一次性给出:任务理解 + 类别判定 + 理由 + 候选(若不确定)+ 后续动作 + "确认?" 提示
+- **用户确认前不动任何文件**(不创建 `.experience/`、不拷模板)
+- 类别判不准 → 列 2-3 候选,**不猜**
+
+**失败信号**:
+- AI 直接开始执行,先建目录后告诉用户 → SKILL.md A.0 没生效
+- AI 单独问"是哪个类别?"再问"确认建吗?"再问"用哪个模板?" → 三连问,违反 G4 批量确认
+- 类别强行猜了一个不告知理由 → 防猜规则没生效
+
+---
+
+## 场景 20 — Path E 必须 Done Contract 收尾
+
+**输入**:用户对 src/foo.c 走完 Quick review,挑了 #1, #3 两条候选。AI 把这两条写入 log.md,更新 review-state.md。
+
+**正确行为**:在最终回复末尾**固定输出 6 段** Done Contract:
+1. Committed: 列出 2 个 entry id
+2. AGENT.md: updated / not touched
+3. review-state.md: updated for src/foo.c at <commit>
+4. Coverage: 已扫文件 / 跳过(未变)文件 / 升级 Deep 区域
+5. Uncovered risks: 本次未覆盖但建议后续做的方向(无则写 "(none)")
+6. Next: integrate / Deep follow-up <area> / 整理 / 不需要后续
+
+**失败信号**:
+- 回复里只有"已完成,写入 2 条" → review.md "Done Contract" 6 段没生效
+- 把"无"留空而不是显式 "(none)" → 同上
+- 用"看代码就知道"代替 entry id 列表 → 同上
+
+---
+
 ## 自检通过标准
 
-18 个场景全部触发"正确行为",无任何"失败信号"出现。任一失败 → 回到对应 SKILL.md / conventions.md / review.md / scripts 段落修文档或修脚本,**不要修压力场景去迁就实现**。
+20 个场景全部触发"正确行为",无任何"失败信号"出现。任一失败 → 回到对应 SKILL.md / conventions.md / review.md / scripts 段落修文档或修脚本,**不要修压力场景去迁就实现**。
 
 **脚本场景(16-18)** 可半自动化跑:在 `/tmp/` 下建 fixture 目录,跑脚本,对比 stdout / exit code。
+**流程场景(1-15, 19, 20)** 由 AI 在执行路径时自检:回看自己刚才的回复,逐条对照"正确行为"。

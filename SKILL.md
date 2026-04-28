@@ -44,15 +44,27 @@ description: Use when the user asks to set up, append to, curate, or read a per-
 
 ## A. 初始化
 
+0. **Restate First & 类别判定**(批量确认,per G4 — 在任何文件操作之前):
+   一次性给用户(模板,缺省值用 `<>` 标):
+   ```
+   我理解的任务:为 <项目名(从 cwd 或用户消息推断)> 建立 .experience/ 目录。
+   类别判定:<source-read | source-fork | application | tool>
+   理由:<一句话:看到 README / package.json / 目录结构里的什么信号>
+   不确定时,候选:<列 2-3 个>。
+   后续动作:从 templates/ 拷 4 文件 + 建 2 目录,只用 README/构建文件/入口推断快照,业务逻辑一律 <TBD>。
+   确认?(yes / 改为 X / 选候选 #N)
+   ```
+   **类别绝不允许猜**。判不准就给候选让用户选,不要走到 step 3 才发现错。
+   用户确认前不动任何文件。
+
 1. 检查 `.experience/` 是否已存在 → **存在则切到 C**,禁止覆盖
-2. 用 `categories.md` 判定项目类型(4 选 1)。判不准就直接问用户,**不要猜**
-3. 创建目录,从 `templates/` 拷:
+2. 创建目录,从 `templates/` 拷:
    - `templates/AGENT.<category>.md` → `.experience/AGENT.md`
    - `templates/log.template.md` → `.experience/log.md`
    - `templates/review-state.template.md` → `.experience/review-state.md`
    - 创建空 `details/` 与 `details/archive/`
    - `.experience/.overrides.md` **不**自动创建,按需才建
-4. **填充硬边界(防幻觉)**:初始化只能从这些来源推断 AGENT.md 的"项目快照":
+3. **填充硬边界(防幻觉)**:初始化只能从这些来源推断 AGENT.md 的"项目快照":
    - `README*` / `CHANGELOG*` / `docs/`
    - 构建文件(`package.json` / `pom.xml` / `go.mod` / `Cargo.toml` / `requirements.txt` / `CMakeLists.txt`)
    - 目录结构本身
@@ -62,7 +74,7 @@ description: Use when the user asks to set up, append to, curate, or read a per-
    **禁止**:扫描业务代码后编造"模块职责"、推测"设计意图"、复述未读源码的行为。
    不确定的字段一律写 `<TBD>`,留给用户后续补。
 
-5. 完成后告诉用户:**"骨架已建。后续记经验请说'记一条…',我走追加路径。"**
+4. 完成后告诉用户:**"骨架已建。后续记经验请说'记一条…',我走追加路径。"**
 
 ---
 

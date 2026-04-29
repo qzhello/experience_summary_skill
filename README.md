@@ -58,24 +58,34 @@ cp -R . ~/.claude/skills/experience-summary/
 ~/.claude/skills/experience-summary/
 ```
 
-如果你还想在 Claude Code 里用斜线命令(`/exp-init` 这类),还需要把本仓库里的命令文件同步到你的 Claude commands 目录。
+如果你还想在 Claude Code 里用统一斜线命令 `/exp`,再额外复制命令文件:
+
+```bash
+mkdir -p ~/.claude/commands
+cp commands/exp.md ~/.claude/commands/exp.md
+```
 
 ### Codex
 
 复制到 Codex skills 目录:
 
 ```bash
-mkdir -p ~/.agents/skills/experience-summary
-cp -R . ~/.agents/skills/experience-summary/
+mkdir -p ~/.codex/skills/experience-summary
+cp -R . ~/.codex/skills/experience-summary/
 ```
 
 安装后目录应为:
 
 ```text
-~/.agents/skills/experience-summary/
+~/.codex/skills/experience-summary/
 ```
 
-Codex 侧推荐直接用 `$exp-*` 方式点名对应 skill 入口。
+如果你还想在 Codex 里用更短的 `$exp` 入口,再额外复制 alias skill:
+
+```bash
+mkdir -p ~/.codex/skills/exp
+cp aliases/exp/SKILL.md ~/.codex/skills/exp/SKILL.md
+```
 
 ## 怎么用
 
@@ -139,55 +149,47 @@ deep review 一下 Redis AOF 相关调用链
 
 ## 快捷命令
 
-如果你不想每次都手写 `use experience-summary skill ...`,可以直接用快捷入口。
+如果你不想每次都手写 `use experience-summary skill ...`,可以直接用统一入口。
 
-### Claude Code: `/exp-*`
+### Claude Code: `/exp`
 
-适合 Claude Code 的 slash command:
-
-```text
-/exp-init
-/exp-log
-/exp-review
-/exp-clean
-/exp-read
-```
-
-建议语义:
-
-- `/exp-init`: 初始化 `.experience/`
-- `/exp-log`: 追加一条经验
-- `/exp-review`: 进入 review 路径
-- `/exp-clean`: 进入整理路径
-- `/exp-read`: 先读经验目录再分析项目
-
-### Codex: `$exp-*`
-
-适合 Codex 的快捷 skill 入口:
+适合 Claude Code 的统一 slash command:
 
 ```text
-$exp-init
-$exp-log
-$exp-review
-$exp-clean
-$exp-read
+/exp 初始化这个项目的经验目录
+/exp 记一条 BUG: 支付回调重复消费导致订单状态回退
+/exp review 一下 src/order/service.go
+/exp 看下这个项目之前踩过哪些坑
+/exp 整理一下经验目录
 ```
 
-建议语义和上面保持一致。
+### Codex: `$exp`
+
+适合 Codex 的统一 skill 入口:
+
+```text
+$exp 初始化这个项目的经验目录
+$exp 记一条 BUG: 支付回调重复消费导致订单状态回退
+$exp review src/order/service.go
+$exp 看下之前踩过哪些坑
+$exp 整理一下经验目录
+```
+
+语义和 Claude Code 的 `/exp` 保持一致:根据你后面的自然语言,自动路由到初始化 / 追加 / 整理 / 阅读 / review 路径。
 
 ### 什么时候用快捷命令,什么时候直接说自然语言
 
-- 想快速进入固定路径,用 `/exp-*` 或 `$exp-*`
+- 想快速进入 experience-summary,用 `/exp ...` 或 `$exp ...`
 - 想把任务说完整,直接自然语言更方便
 
 例如:
 
 ```text
-/exp-init
+/exp 初始化这个项目的经验目录
 ```
 
 ```text
-$exp-review src/order/service.go
+$exp review src/order/service.go
 ```
 
 ```text

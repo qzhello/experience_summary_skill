@@ -65,6 +65,33 @@ mkdir -p ~/.claude/commands
 cp commands/exp.md ~/.claude/commands/exp.md
 ```
 
+最短验证步骤:
+
+1. 打开 Claude Code,进入任意项目目录
+2. 在 **Claude Code 对话框** 输入:
+
+```text
+/exp 初始化这个项目的经验目录
+```
+
+3. 如果命令生效,Claude Code 会把它当成 slash command 处理,而不是普通文本
+
+注意:
+
+- `/exp ...` 是 **Claude Code 对话命令**
+- `pwd` 是 **shell 命令**
+- 不要在 zsh/bash 里执行 `/exp` 或 `/pwd`
+
+例如:
+
+```bash
+pwd
+```
+
+```text
+/exp review src/order/service.go
+```
+
 ### Codex
 
 复制到 Codex skills 目录:

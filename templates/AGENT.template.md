@@ -14,16 +14,16 @@
 
 ## 1. 项目快照
 
-- **一句话定位**: <TBD>
-- **技术栈**: <TBD,如 Java 17 / Spring Boot 3.x / PostgreSQL 15>
-- **入口文件**: <TBD,如 `src/main/.../Application.java`>
+- **一句话定位**: <待补>
+- **技术栈**: <待补 — 例:Java 17 / Spring Boot 3.x / PostgreSQL 15>
+- **入口文件**: <待补 — 例:`src/main/.../Application.java`>
 - **次要总结**(最多 3 条,溢出降级为 log 的 type=note):
-  - <TBD>
+  - <待补>
 
 ## 2. 适用版本 / 分支
 
-- **当前版本**: <TBD,如 `internal-app@2026-04` 或 `redis@7.2.4`>
-- **跟踪分支**: <TBD,如 `main` / `release/2.x`>
+- **当前版本**: <待补 — 例:`internal-app@2026-04` 或 `redis@7.2.4`>
+- **跟踪分支**: <待补 — 例:`main` / `release/2.x`>
 - **历史范围**: 本经验目录覆盖 <起始日期> 至今的认知
 
 ## 3. 高频入口

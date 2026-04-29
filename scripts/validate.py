@@ -279,6 +279,9 @@ def main() -> int:
                     help="Also validate AGENT.md (size + non-active links + secret scan)")
     ap.add_argument("--no-secret-scan", action="store_true",
                     help="Disable W006 secret-pattern scan in entry bodies")
+    ap.add_argument("--show-codes", action="store_true",
+                    help="Show internal error/warning codes (E001/W001 etc.) in output. "
+                         "Default off — codes are for debugging, not end users.")
     ap.add_argument("--format", choices=["table", "json"], default="table")
     args = ap.parse_args()
 
@@ -306,6 +309,7 @@ def main() -> int:
     warnings = [i for i in issues if i.level == "warning"]
 
     if args.format == "json":
+        # JSON output always includes codes — it's for tooling
         out = {
             "log_path": str(log_path),
             "entries_parsed": len(result.entries),
@@ -316,7 +320,10 @@ def main() -> int:
         print(json.dumps(out, indent=2, ensure_ascii=False))
     else:
         for i in errors + warnings:
-            print(f"{i.level.upper():7} {i.code} [{i.entry_id}] {i.message}")
+            if args.show_codes:
+                print(f"{i.level.upper():7} {i.code} [{i.entry_id}] {i.message}")
+            else:
+                print(f"{i.level.upper():7} [{i.entry_id}] {i.message}")
         if not issues:
             print("(no issues)")
         print(f"\n{len(result.entries)} entries · "

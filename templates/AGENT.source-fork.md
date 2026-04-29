@@ -12,16 +12,16 @@
 
 ## 1. 项目快照
 
-- **一句话定位**: <TBD,如 "fork 自 Redis 7.2,新增 XX 命令支持 YY 业务">
-- **上游基线**: <TBD,如 `upstream redis@7.2.4`>
-- **当前版本**: <TBD,如 `our-fork@2026.04>`
-- **改造范围一句话**: <TBD>
+- **一句话定位**: <待补 — 例:"fork 自 Redis 7.2,新增 XX 命令支持 YY 业务">
+- **上游基线**: <待补 — 例:`upstream redis@7.2.4`>
+- **当前版本**: <待补 — 例:`our-fork@2026.04>`
+- **改造范围一句话**: <待补>
 
 ## 2. 适用版本 / 分支
 
-- **fork 分支**: <TBD,如 `release/our-2.x`>
-- **上游 sync 频率**: <TBD,如 "每季度 rebase upstream/7.2">
-- **最近 sync 时间**: <TBD>
+- **fork 分支**: <待补 — 例:`release/our-2.x`>
+- **上游 sync 频率**: <待补 — 例:"每季度 rebase upstream/7.2">
+- **最近 sync 时间**: <待补>
 
 ## 3. 改动点速查
 

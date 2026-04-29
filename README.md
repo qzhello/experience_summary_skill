@@ -39,8 +39,8 @@
 先 clone 这个仓库,再进入仓库目录:
 
 ```bash
-git clone <your-repo-url> experience-summary
-cd experience-summary
+git clone https://github.com/qzhello/experience_summary_skill.git experience_summary_skill
+cd experience_summary_skill
 ```
 
 ### Claude Code

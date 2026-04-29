@@ -43,6 +43,36 @@ git clone https://github.com/qzhello/experience_summary_skill.git experience_sum
 cd experience_summary_skill
 ```
 
+### 推荐: 一键安装脚本
+
+仓库自带 `install.sh`。
+
+```bash
+chmod +x install.sh
+./install.sh
+```
+
+默认行为:
+
+- 检查 `~/.claude` 和 `~/.codex` 是否存在
+- 如果两者都存在,提示你选择安装到 Claude Code / Codex / Both
+- 如果只存在一个,默认安装那个
+
+全量更新安装:
+
+```bash
+./install.sh -g
+```
+
+这会把当前仓库内容同步到所有已存在的目标目录,适合仓库更新后重新执行一次。
+
+也支持非交互定向安装:
+
+```bash
+./install.sh --claude
+./install.sh --codex
+```
+
 ### Claude Code
 
 复制到 Claude Code skills 目录:

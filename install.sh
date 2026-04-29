@@ -16,12 +16,15 @@ CODEX_ALIAS_FILE="${CODEX_ALIAS_DIR}/SKILL.md"
 INSTALL_CLAUDE=0
 INSTALL_CODEX=0
 GLOBAL_MODE=0
+PULL_MODE=0
 
 usage() {
   cat <<'EOF'
 Usage:
   ./install.sh
   ./install.sh -g
+  ./install.sh --pull
+  ./install.sh --pull -g
   ./install.sh --claude
   ./install.sh --codex
   ./install.sh -h
@@ -29,10 +32,30 @@ Usage:
 Modes:
   (no args)   Interactive install. If both ~/.claude and ~/.codex exist, ask which to install.
   -g          Install/update everything that exists locally. No prompt.
+  --pull      Run `git pull --ff-only` first, then install.
   --claude    Install/update Claude Code only.
   --codex     Install/update Codex only.
   -h          Show help.
 EOF
+}
+
+git_pull_if_requested() {
+  if [[ "$PULL_MODE" -ne 1 ]]; then
+    return 0
+  fi
+
+  if [[ ! -d "$SCRIPT_DIR/.git" ]]; then
+    echo "[error] --pull requested, but current directory is not a git repository."
+    exit 1
+  fi
+
+  if ! git -C "$SCRIPT_DIR" remote get-url origin >/dev/null 2>&1; then
+    echo "[error] --pull requested, but git remote 'origin' is not configured."
+    exit 1
+  fi
+
+  echo "[info] Running git pull --ff-only ..."
+  git -C "$SCRIPT_DIR" pull --ff-only
 }
 
 copy_dir() {
@@ -141,6 +164,10 @@ while [[ $# -gt 0 ]]; do
       INSTALL_CODEX=1
       shift
       ;;
+    --pull)
+      PULL_MODE=1
+      shift
+      ;;
     --claude)
       INSTALL_CLAUDE=1
       shift
@@ -161,6 +188,8 @@ while [[ $# -gt 0 ]]; do
       ;;
   esac
 done
+
+git_pull_if_requested
 
 if [[ "$GLOBAL_MODE" -eq 0 && "$INSTALL_CLAUDE" -eq 0 && "$INSTALL_CODEX" -eq 0 ]]; then
   interactive_select

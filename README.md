@@ -73,6 +73,24 @@ chmod +x install.sh
 ./install.sh --codex
 ```
 
+如果你希望**先从 GitHub 拉最新代码,再安装**,用:
+
+```bash
+./install.sh --pull
+```
+
+或:
+
+```bash
+./install.sh --pull -g
+```
+
+说明:
+
+- `--pull` 会先执行 `git pull --ff-only`
+- pull 失败时,安装会直接停止
+- 默认模式仍然只安装你本地当前目录里的版本,不会自动联网更新
+
 ### Claude Code
 
 复制到 Claude Code skills 目录:

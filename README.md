@@ -58,6 +58,8 @@ cp -R . ~/.claude/skills/experience-summary/
 ~/.claude/skills/experience-summary/
 ```
 
+如果你还想在 Claude Code 里用斜线命令(`/exp-init` 这类),还需要把本仓库里的命令文件同步到你的 Claude commands 目录。
+
 ### Codex
 
 复制到 Codex skills 目录:
@@ -72,6 +74,8 @@ cp -R . ~/.agents/skills/experience-summary/
 ```text
 ~/.agents/skills/experience-summary/
 ```
+
+Codex 侧推荐直接用 `$exp-*` 方式点名对应 skill 入口。
 
 ## 怎么用
 
@@ -131,6 +135,63 @@ cp -R . ~/.agents/skills/experience-summary/
 
 ```text
 deep review 一下 Redis AOF 相关调用链
+```
+
+## 快捷命令
+
+如果你不想每次都手写 `use experience-summary skill ...`,可以直接用快捷入口。
+
+### Claude Code: `/exp-*`
+
+适合 Claude Code 的 slash command:
+
+```text
+/exp-init
+/exp-log
+/exp-review
+/exp-clean
+/exp-read
+```
+
+建议语义:
+
+- `/exp-init`: 初始化 `.experience/`
+- `/exp-log`: 追加一条经验
+- `/exp-review`: 进入 review 路径
+- `/exp-clean`: 进入整理路径
+- `/exp-read`: 先读经验目录再分析项目
+
+### Codex: `$exp-*`
+
+适合 Codex 的快捷 skill 入口:
+
+```text
+$exp-init
+$exp-log
+$exp-review
+$exp-clean
+$exp-read
+```
+
+建议语义和上面保持一致。
+
+### 什么时候用快捷命令,什么时候直接说自然语言
+
+- 想快速进入固定路径,用 `/exp-*` 或 `$exp-*`
+- 想把任务说完整,直接自然语言更方便
+
+例如:
+
+```text
+/exp-init
+```
+
+```text
+$exp-review src/order/service.go
+```
+
+```text
+记一条 BUG: 支付回调重复消费导致订单状态回退
 ```
 
 ## 使用后的效果
